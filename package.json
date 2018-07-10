@@ -1,0 +1,20 @@
+{
+  "name": "zp-debug-tool",
+  "version": "0.0.1",
+  "description": "zan-proxy plugin for debug web",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "111"
+  },
+  "keywords": [
+    "zan-proxy",
+    "debug",
+    "web"
+  ],
+  "author": "",
+  "license": "ISC"
+}
