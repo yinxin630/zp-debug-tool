@@ -18,6 +18,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "byte-length": "^1.0.2",
     "koa": "^2.5.1"
   }
 }
