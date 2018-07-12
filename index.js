@@ -22,7 +22,7 @@ module.exports = class DebugToolPlugin {
             })
 
             const body = await getBodyPromise;
-            const inject = '<script src="https://cdn.bootcss.com/eruda/1.4.4/eruda.min.js"></script><script>eruda.init()</script>';
+            const inject = '\n<script src="https://cdn.bootcss.com/eruda/1.4.4/eruda.min.js"></script><script>eruda.init()</script>';
             let index = body.indexOf('<head>');
             if (index !== -1) {
                 const result = body.slice(0, index + 6) + inject + body.slice(index + 6, body.length);
