@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>zp-debug-tool配置</title>
+    <link href="https://cdn.bootcss.com/amazeui/2.7.2/css/amazeui.min.css" rel="stylesheet">
+    <style>
+        body {
+            margin: 12px;
+        }
+    </style>
+</head>
+<body>
+    <h2>zp-debug-tool</h2>
+    <div class="block am-checkbox">
+        <label>
+            <input type="checkbox" name="eruda"> 启用erada
+        </label>
+    </div>
+    <script src="https://cdn.bootcss.com/fetch/2.0.4/fetch.min.js"></script>
+    <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+    <script>
+        $(function() {
+            getConfig();
+            registerEvents();
+        })
+        function getConfig() {
+            fetch(window.location.pathname + '/config')
+                .then(function(res) {
+                    return res.json();
+                })
+                .then(function(config) {
+                    for (var name in config) {
+                        var selector = 'input[name=' + name + ']';
+                        $(selector).prop('checked', config[name]);
+                    }
+                }
+            );
+        }
+        function registerEvents() {
+            $('input').each(function(index, el) {
+                el.addEventListener('change', function(e) {
+                    fetch(window.location.pathname + '/' + el.name, {
+                        method: 'post',
+                        body: JSON.stringify({enable: el.checked}),
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    })
+                })
+            });
+        }
+    </script>
+</body>
+</html>

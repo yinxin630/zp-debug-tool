@@ -1,7 +1,19 @@
 const Koa = require('koa');
-const byteLength = require('byte-length').byteLength;
+const Static = require('koa-static');
+const Router = require('koa-router');
+const BodyParser = require('koa-bodyparser');
+const path = require('path');
+const { byteLength } = require('byte-length');
+
+const erudaScript = '\n<script src="https://cdn.bootcss.com/eruda/1.4.4/eruda.min.js"></script><script>eruda.init()</script>';
 
 module.exports = class DebugToolPlugin {
+    constructor() {
+        this.config = {
+            eruda: true,
+        };
+    }
+
     proxy() {
         return async (ctx, next) => {
             await next();
@@ -13,27 +25,43 @@ module.exports = class DebugToolPlugin {
 
             const getBodyPromise = new Promise((resolve) => {
                 let body = '';
-                ctx.res.body.on('data', buffer => {
+                ctx.res.body.on('data', (buffer) => {
                     body += buffer.toString();
                 });
                 ctx.res.body.on('end', () => {
-                    resolve(body)
+                    resolve(body);
                 });
-            })
+            });
 
             const body = await getBodyPromise;
-            const inject = '\n<script src="https://cdn.bootcss.com/eruda/1.4.4/eruda.min.js"></script><script>eruda.init()</script>';
-            let index = body.indexOf('<head>');
+            let inject = '';
+            if (this.config.eruda) {
+                inject += erudaScript;
+            }
+
+            const index = body.indexOf('<head>');
             if (index !== -1) {
                 const result = body.slice(0, index + 6) + inject + body.slice(index + 6, body.length);
                 ctx.res.setHeader('content-length', byteLength(result));
                 ctx.res.body = result;
-                return;
             }
+        };
+    }
 
-        }
-    }
     manage() {
-        return new Koa();
+        const app = new Koa();
+        app.use(Static(path.resolve(__dirname, './static')));
+        app.use(BodyParser());
+        const router = new Router();
+        router.get('/config', async (ctx) => {
+            ctx.body = this.config;
+        });
+        router.post('/eruda', async (ctx) => {
+            this.config.eruda = ctx.request.body.enable;
+            ctx.body = { msg: 'ok' };
+        });
+        app.use(router.routes());
+        app.use(router.allowedMethods());
+        return app;
     }
-}
+};
