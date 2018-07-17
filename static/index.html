@@ -45,7 +45,7 @@
             </label>
             <br/>
             <label>
-                <input type="checkbox" id="vorlon"> 插入vorlon <a id="vorlonDashboard" target="_blank"></a>
+                <input type="checkbox" id="vorlon"> 插入vorlon &nbsp;<a id="vorlonDashboard" target="_blank"></a>
             </label>
             <br/>
             <label>
@@ -84,7 +84,7 @@
                         $('#eruda').prop('checked', config.eruda);
                         $('#vorlon').prop('checked', config.vorlon);
                         var vorlonDashboardLink = 'http://127.0.0.1:' + config.vorlonPort;
-                        $('#vorlonDashboard').prop('href', vorlonDashboardLink).text('打开控制台');
+                        $('#vorlonDashboard').prop('href', vorlonDashboardLink).text('前往vorlon仪表盘');
                         $('#custom').prop('checked', config.custom);
                         $('#customContent').val(config.customContent);
                     }

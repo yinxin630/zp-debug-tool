@@ -8,14 +8,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "111"
+    "url": "https://github.com/yinxin630/zp-debug-tool"
   },
   "keywords": [
     "zan-proxy",
     "debug",
     "web"
   ],
-  "author": "",
+  "author": "碎碎酱 <yinxin630@gmail.com>",
   "license": "ISC",
   "dependencies": {
     "byte-length": "^1.0.2",
