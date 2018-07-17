@@ -5,7 +5,7 @@ const BodyParser = require('koa-bodyparser');
 const path = require('path');
 const { byteLength } = require('byte-length');
 
-const erudaScript = '\n<script src="https://cdn.bootcss.com/eruda/1.4.4/eruda.min.js"></script><script>eruda.init()</script>';
+const erudaScript = '\n<script src="https://cdn.bootcss.com/eruda/1.4.4/eruda.min.js"></script><script>eruda.init()</script>\n';
 
 module.exports = class DebugToolPlugin {
     constructor() {
