@@ -1,6 +1,6 @@
 {
   "name": "zp-debug-tool",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "zan-proxy plugin for debug web",
   "main": "index.js",
   "scripts": {
