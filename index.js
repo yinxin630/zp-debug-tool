@@ -3,7 +3,13 @@ const Static = require('koa-static');
 const Router = require('koa-router');
 const BodyParser = require('koa-bodyparser');
 const path = require('path');
+const fs = require('fs');
 const { byteLength } = require('byte-length');
+const jsonfile = require('jsonfile');
+const os = require('os');
+
+const zpConfigPath = `${os.homedir()}/.front-end-proxy`;
+const configFilePath = `${zpConfigPath}/zp-debug-tool.config.js`;
 
 const erudaScript = '\n<script src="https://cdn.bootcss.com/eruda/1.4.4/eruda.min.js"></script><script>eruda.init()</script>\n';
 
@@ -14,6 +20,28 @@ module.exports = class DebugToolPlugin {
             custom: true, // 是否插入自定义内容
             customContent: '', // 自定义的内容
         };
+
+        this.readConfig();
+    }
+
+    readConfig() {
+        if (fs.existsSync(configFilePath)) {
+            jsonfile.readFile(configFilePath, (err, config) => {
+                if (!err) {
+                    Object.assign(this.config, config);
+                }
+            });
+        }
+    }
+
+    writeConfig() {
+        if (fs.existsSync(zpConfigPath)) {
+            jsonfile.writeFile(configFilePath, this.config, (err) => {
+                if (err) {
+                    console.error('"zp-debug-tool" 插件保存配置失败');
+                }
+            });
+        }
     }
 
     proxy() {
@@ -63,10 +91,12 @@ module.exports = class DebugToolPlugin {
         });
         router.post('/eruda', async (ctx) => {
             this.config.eruda = ctx.request.body.enable;
+            this.writeConfig();
             ctx.body = { msg: 'ok' };
         });
         router.post('/customContent', async (ctx) => {
             this.config.customContent = ctx.request.body.customContent;
+            this.writeConfig();
             ctx.body = { msg: 'ok' };
         });
         app.use(router.routes());
