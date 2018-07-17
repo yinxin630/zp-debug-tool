@@ -8,6 +8,9 @@ const { byteLength } = require('byte-length');
 const jsonfile = require('jsonfile');
 const os = require('os');
 
+process.env.PORT = Math.floor(Math.random() * 40000 + 10000);
+require('vorlon');
+
 const zpConfigPath = `${os.homedir()}/.front-end-proxy`;
 const configFilePath = `${zpConfigPath}/zp-debug-tool.config.js`;
 
@@ -17,6 +20,7 @@ module.exports = class DebugToolPlugin {
     constructor() {
         this.config = {
             eruda: true, // 是否插入eruda
+            vorlon: true, // 是否插入vorlon
             custom: true, // 是否插入自定义内容
             customContent: '', // 自定义的内容
         };
@@ -71,6 +75,7 @@ module.exports = class DebugToolPlugin {
             if (this.config.custom) {
                 inject += this.config.customContent;
             }
+            inject += `<script src="http://localhost:${process.env.PORT}/vorlon.js"></script>`;
 
             const index = body.indexOf('<head>');
             if (index !== -1) {
@@ -87,10 +92,17 @@ module.exports = class DebugToolPlugin {
         app.use(BodyParser());
         const router = new Router();
         router.get('/config', async (ctx) => {
-            ctx.body = this.config;
+            ctx.body = Object.assign({
+                vorlonPort: process.env.PORT,
+            }, this.config);
         });
         router.post('/eruda', async (ctx) => {
             this.config.eruda = ctx.request.body.enable;
+            this.writeConfig();
+            ctx.body = { msg: 'ok' };
+        });
+        router.post('/vorlon', async (ctx) => {
+            this.config.vorlon = ctx.request.body.enable;
             this.writeConfig();
             ctx.body = { msg: 'ok' };
         });

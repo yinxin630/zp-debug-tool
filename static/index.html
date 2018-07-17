@@ -36,6 +36,10 @@
             </label>
             <br/>
             <label>
+                <input type="checkbox" id="vorlon"> 插入vorlon <a id="vorlonDashboard" target="_blank"></a>
+            </label>
+            <br/>
+            <label>
                 <input type="checkbox" id="custom"> 插入自定义内容
             </label>
         </div>
@@ -68,19 +72,19 @@
                 })
                 .then(function(config) {
                     for (var name in config) {
-                        var selector = '#' + name;
-
-                        if (typeof config[name] === 'string') {
-                            $(selector).val(config[name]);
-                        } else if (typeof config[name] === 'boolean') {
-                            $(selector).prop('checked', config[name]);
-                        }
+                        $('#eruda').prop('checked', config.eruda);
+                        $('#vorlon').prop('checked', config.vorlon);
+                        var vorlonDashboardLink = 'http://127.0.0.1:' + config.vorlonPort;
+                        $('#vorlonDashboard').prop('href', vorlonDashboardLink).text('打开控制台');
+                        $('#custom').prop('checked', config.custom);
+                        $('#customContent').val(config.customContent);
                     }
                 }
             );
         }
         function registerEvents() {
             registerCheckboxEvent('eruda');
+            registerCheckboxEvent('vorlon');
             registerCheckboxEvent('custom');
             $('#customContent').change(function(e) {
                 fetch('/plugins/zp-debug-tool/customContent', {
