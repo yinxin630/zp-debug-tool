@@ -10,7 +10,9 @@ const erudaScript = '\n<script src="https://cdn.bootcss.com/eruda/1.4.4/eruda.mi
 module.exports = class DebugToolPlugin {
     constructor() {
         this.config = {
-            eruda: true,
+            eruda: true, // 是否插入eruda
+            custom: true, // 是否插入自定义内容
+            customContent: '', // 自定义的内容
         };
     }
 
@@ -38,6 +40,9 @@ module.exports = class DebugToolPlugin {
             if (this.config.eruda) {
                 inject += erudaScript;
             }
+            if (this.config.custom) {
+                inject += this.config.customContent;
+            }
 
             const index = body.indexOf('<head>');
             if (index !== -1) {
@@ -58,6 +63,10 @@ module.exports = class DebugToolPlugin {
         });
         router.post('/eruda', async (ctx) => {
             this.config.eruda = ctx.request.body.enable;
+            ctx.body = { msg: 'ok' };
+        });
+        router.post('/customContent', async (ctx) => {
+            this.config.customContent = ctx.request.body.customContent;
             ctx.body = { msg: 'ok' };
         });
         app.use(router.routes());
