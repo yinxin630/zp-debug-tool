@@ -35,7 +35,7 @@
 </html>
 ```
 
-`eruda` 介绍 [https://github.com/liriliri/eruda](https://github.com/liriliri/eruda)
+`eruda` 介绍 [https://github.com/liriliri/eruda](https://github.com/liriliri/eruda)  
 `vorlon` 介绍 [http://www.vorlonjs.io/](http://www.vorlonjs.io/)
 
 ## 修改插件配置
