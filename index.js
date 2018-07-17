@@ -7,8 +7,9 @@ const fs = require('fs');
 const { byteLength } = require('byte-length');
 const jsonfile = require('jsonfile');
 const os = require('os');
+const ip = require('ip');
 
-process.env.PORT = Math.floor(Math.random() * 40000 + 10000);
+process.env.PORT = 9998;
 require('vorlon');
 
 const zpConfigPath = `${os.homedir()}/.front-end-proxy`;
@@ -53,7 +54,10 @@ module.exports = class DebugToolPlugin {
             await next();
 
             const contentType = ctx.res.getHeader('content-type');
-            if (contentType && !/html/.test(contentType)) {
+            if (
+                /socket\.io/.test(ctx.req.url)
+                || contentType && !/html/.test(contentType)
+            ) {
                 return;
             }
 
@@ -75,7 +79,7 @@ module.exports = class DebugToolPlugin {
             if (this.config.custom) {
                 inject += this.config.customContent;
             }
-            inject += `<script src="http://localhost:${process.env.PORT}/vorlon.js"></script>`;
+            inject += `<script src="http://${ip.address()}:${process.env.PORT}/vorlon.js"></script>`;
 
             const index = body.indexOf('<head>');
             if (index !== -1) {
