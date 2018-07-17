@@ -27,7 +27,7 @@
             registerEvents();
         })
         function getConfig() {
-            fetch(window.location.pathname + '/config')
+            fetch('/plugins/zp-debug-tool/config')
                 .then(function(res) {
                     return res.json();
                 })
@@ -42,7 +42,7 @@
         function registerEvents() {
             $('input').each(function(index, el) {
                 el.addEventListener('change', function(e) {
-                    fetch(window.location.pathname + '/' + el.name, {
+                    fetch('/plugins/zp-debug-tool/' + el.name, {
                         method: 'post',
                         body: JSON.stringify({enable: el.checked}),
                         headers: {
