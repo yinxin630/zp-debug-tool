@@ -94,6 +94,11 @@ module.exports = class DebugToolPlugin {
             this.writeConfig();
             ctx.body = { msg: 'ok' };
         });
+        router.post('/custom', async (ctx) => {
+            this.config.custom = ctx.request.body.enable;
+            this.writeConfig();
+            ctx.body = { msg: 'ok' };
+        });
         router.post('/customContent', async (ctx) => {
             this.config.customContent = ctx.request.body.customContent;
             this.writeConfig();

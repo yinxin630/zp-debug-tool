@@ -42,12 +42,12 @@
     </div>
 
     <div class="block am-panel am-panel-primary">
-        <div class="am-panel-hd">向页面插入自定义内容</div>
-        <div class="am-panel-bd insert-content am-form-group">
+        <div class="am-panel-hd">编辑自定义内容</div>
+        <div class="am-panel-bd insert-content">
             <div class="am-form-group">
                 <textarea id="customContent"></textarea>
             </div>
-            <button type="submit" class="am-btn am-btn-primary">保存</button>
+            <button type="submit" class="am-btn am-btn-primary">保存内容</button>
         </div>
     </div>
 
@@ -80,10 +80,12 @@
             );
         }
         function registerEvents() {
-            $('#eruda').change(function(e) {
-                fetch('/plugins/zp-debug-tool/eruda', {
+            registerCheckboxEvent('eruda');
+            registerCheckboxEvent('custom');
+            $('#customContent').change(function(e) {
+                fetch('/plugins/zp-debug-tool/customContent', {
                     method: 'post',
-                    body: JSON.stringify({enable: e.target.checked}),
+                    body: JSON.stringify({customContent: e.target.value}),
                     headers: {
                         'Content-Type': 'application/json'
                     }
@@ -93,10 +95,12 @@
                     }
                 })
             })
-            $('#customContent').change(function(e) {
-                fetch('/plugins/zp-debug-tool/customContent', {
+        }
+        function registerCheckboxEvent(id) {
+            $('#' + id).change(function(e) {
+                fetch('/plugins/zp-debug-tool/' + id, {
                     method: 'post',
-                    body: JSON.stringify({customContent: e.target.value}),
+                    body: JSON.stringify({enable: e.target.checked}),
                     headers: {
                         'Content-Type': 'application/json'
                     }
