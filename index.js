@@ -76,10 +76,12 @@ module.exports = class DebugToolPlugin {
             if (this.config.eruda) {
                 inject += erudaScript;
             }
+            if (this.config.vorlon) {
+                inject += `<script src="http://${ip.address()}:${process.env.PORT}/vorlon.js"></script>`;
+            }
             if (this.config.custom) {
                 inject += this.config.customContent;
             }
-            inject += `<script src="http://${ip.address()}:${process.env.PORT}/vorlon.js"></script>`;
 
             const index = body.indexOf('<head>');
             if (index !== -1) {
