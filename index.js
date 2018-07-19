@@ -75,7 +75,8 @@ module.exports = class DebugToolPlugin {
 
             const contentType = ctx.res.getHeader('content-type');
             if (
-                contentType && !/html/.test(contentType)
+                /socket\.io/.test(ctx.req.url) // 来自socket.io的不处理
+                || contentType && !/html/.test(contentType) // 非html响应不处理
             ) {
                 return;
             }
