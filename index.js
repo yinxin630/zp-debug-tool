@@ -70,7 +70,6 @@ module.exports = class DebugToolPlugin {
     // 插件核心功能, 改写响应
     proxy() {
         return async (ctx, next) => {
-            console.log(ctx.req.url);
             await next();
 
             const contentType = ctx.res.getHeader('content-type');
