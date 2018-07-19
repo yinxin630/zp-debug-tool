@@ -8,6 +8,7 @@ const { byteLength } = require('byte-length');
 const jsonfile = require('jsonfile');
 const os = require('os');
 const ip = require('ip');
+const zlib = require('zlib');
 
 process.env.PORT = 9998;
 require('vorlon');
@@ -18,6 +19,21 @@ const configFilePath = `${zpConfigPath}/zp-debug-tool.config.js`;
 const erudaScript = '\n<script src="https://cdn.bootcss.com/eruda/1.4.4/eruda.min.js"></script><script>eruda.init()</script>\n';
 
 module.exports = class DebugToolPlugin {
+    /**
+     * gzip转string
+     * @param {Buffer} gzip gzip编码数据
+     */
+    static async gzipToString(gzip) {
+        return new Promise((resolve, reject) => {
+            zlib.gunzip(gzip, (err, dezipped) => {
+                if (!err) {
+                    return resolve(dezipped.toString());
+                }
+                reject(err);
+            });
+        });
+    }
+
     constructor() {
         this.config = {
             eruda: true, // 是否插入eruda
@@ -29,6 +45,7 @@ module.exports = class DebugToolPlugin {
         this.readConfig();
     }
 
+    // 读取配置文件
     readConfig() {
         if (fs.existsSync(configFilePath)) {
             jsonfile.readFile(configFilePath, (err, config) => {
@@ -39,6 +56,7 @@ module.exports = class DebugToolPlugin {
         }
     }
 
+    // 写入配置文件
     writeConfig() {
         if (fs.existsSync(zpConfigPath)) {
             jsonfile.writeFile(configFilePath, this.config, (err) => {
@@ -49,22 +67,24 @@ module.exports = class DebugToolPlugin {
         }
     }
 
+    // 插件核心功能, 改写响应
     proxy() {
         return async (ctx, next) => {
+            console.log(ctx.req.url);
             await next();
 
             const contentType = ctx.res.getHeader('content-type');
             if (
-                /socket\.io/.test(ctx.req.url)
-                || contentType && !/html/.test(contentType)
+                contentType && !/html/.test(contentType)
             ) {
                 return;
             }
 
+            const contentEncoding = ctx.res.getHeader('content-encoding');
             const getBodyPromise = new Promise((resolve) => {
-                let body = '';
+                let body = Buffer.allocUnsafe(0);
                 ctx.res.body.on('data', (buffer) => {
-                    body += buffer.toString();
+                    body = Buffer.concat([body, buffer]);
                 });
                 ctx.res.body.on('end', () => {
                     resolve(body);
@@ -72,6 +92,19 @@ module.exports = class DebugToolPlugin {
             });
 
             const body = await getBodyPromise;
+
+            let bodyStr = '';
+            if (contentEncoding === 'gzip') {
+                try {
+                    bodyStr = await DebugToolPlugin.gzipToString(body);
+                    ctx.res.removeHeader('content-encoding');
+                } catch (err) {
+                    console.error('gzip转string失败', err);
+                }
+            } else {
+                bodyStr = body.toString();
+            }
+
             let inject = '';
             if (this.config.eruda) {
                 inject += erudaScript;
@@ -83,15 +116,16 @@ module.exports = class DebugToolPlugin {
                 inject += this.config.customContent;
             }
 
-            const index = body.indexOf('<head>');
+            const index = bodyStr.indexOf('<head>');
             if (index !== -1) {
-                const result = body.slice(0, index + 6) + inject + body.slice(index + 6, body.length);
+                const result = bodyStr.slice(0, index + 6) + inject + bodyStr.slice(index + 6, bodyStr.length);
                 ctx.res.setHeader('content-length', byteLength(result));
                 ctx.res.body = result;
             }
         };
     }
 
+    // 插件web管理端
     manage() {
         const app = new Koa();
         app.use(Static(path.resolve(__dirname, './static')));

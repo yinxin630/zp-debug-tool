@@ -25,7 +25,8 @@
     "koa-bodyparser": "^4.2.1",
     "koa-router": "^7.4.0",
     "koa-static": "^5.0.0",
-    "vorlon": "^0.5.5"
+    "vorlon": "^0.5.5",
+    "zlib": "^1.0.5"
   },
   "devDependencies": {
     "eslint": "^4.0.0",
