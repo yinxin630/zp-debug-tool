@@ -55,3 +55,5 @@
 在插件配置页点击插入vorlon后面的 "前往vorlon仪表盘", 如下图:
 
 ![](https://cdn.suisuijiang.com/ImageMessage/5adad39555703565e7903f78_1531838333264.png)
+
+*暂不支持https页面使用*
